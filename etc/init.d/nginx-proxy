@@ -1,0 +1,33 @@
+#!/bin/bash
+
+NGINX=/usr/local/sbin/nginx
+name=$(basename $NGINX)
+cd $(dirname $0)/../..
+logs=logs
+
+usage() {
+    echo "usage: $0 [start|stop|restart]"
+}
+
+start_server() {
+    [ -d $logs ] || mkdir $logs
+    /bin/echo -n "starting $name ...   "
+    $NGINX -p . -c ./etc/nginx.conf && echo '[OK]' || echo '[NG]'
+}
+
+stop_server() {
+    /bin/echo -n "stoping $name ...    "
+    $NGINX -p . -c ./etc/nginx.conf -s stop && echo '[OK]' || echo '[NG]'
+}
+
+restart_server() {
+    stop_server
+    sleep 1
+    start_server
+}
+case $1 in
+    'start') start_server ;;
+    'stop') stop_server ;;
+    'restart') restart_server ;;
+    *) usage ;;
+esac
